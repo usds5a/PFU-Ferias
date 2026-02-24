@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Servidor Web para los iPads
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    restart: always
+
+  # Base de Datos Centralizada con Sincronización
+  couchdb:
+    image: couchdb:3.3
+    ports:
+      - "5984:5984"
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    volumes:
+      - couchdata:/opt/couchdb/data
+    restart: always
+
+volumes:
+  couchdata:

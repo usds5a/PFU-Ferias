@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Offline Lead System</title>
+    <!-- Prevent Search Engines from Indexing -->
+    <meta name="robots" content="noindex, nofollow">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- FontAwesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'dashboard-bg': '#f8f9fa',
+                        'badge-gray': '#e2e8f0',
+                        'badge-green-bg': '#dcfce7',
+                        'badge-green-text': '#166534',
+                        'badge-dark': '#64748b',
+                        'dark-navy': '#1e3a8a',
+                        'dark-log': '#1f2937',
+                        'page-bg': '#f4f6f9',
+                        'title-color': '#2c3e50',
+                        'input-border': '#ced4da',
+                        'label-color': '#6c757d',
+                        'action-btn': '#e97c6b',
+                        'action-btn-hover': '#d66a5a',
+                        'custom-blue': '#1e2b4a',
+                        'custom-bg': '#f4f6f8',
+                        'custom-gray-text': '#5f6b7c',
+                        'custom-border': '#d1d5db',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Font setup */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+
+        /* Custom Input Styling */
+        .custom-input {
+            background-color: #e9ecef !important;
+            border: none !important;
+            border-radius: 999px !important;
+            color: #333 !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease;
+            padding-left: 45px !important;
+            padding-right: 15px !important;
+            height: 50px !important;
+            width: 100% !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            font-size: 15px !important;
+        }
+
+        .custom-input::placeholder {
+            color: #777 !important;
+        }
+
+        .custom-input:focus {
+            background-color: #dee2e6 !important;
+            box-shadow: 0 0 0 3px rgba(65, 112, 216, 0.1) !important;
+            outline: none !important;
+        }
+
+        /* Phone prefix special case */
+        #phone-prefix.custom-input {
+            padding-left: 0 !important;
+            text-align: center !important;
+        }
+
+        /* Custom select arrow (removed for custom implementation) */
+        select.custom-input {
+            background-image: none !important;
+        }
+
+        /* Custom Select Registry */
+        .custom-select-wrapper {
+            position: relative;
+        }
+
+        .custom-select-display {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23333333' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-position: right 1rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 1.5em 1.5em !important;
+        }
+
+        .custom-select-popup {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #f0f0f0;
+            padding: 8px;
+            display: none;
+            animation: selectFadeIn 0.2s ease-out;
+        }
+
+        .custom-select-popup.active {
+            display: block;
+        }
+
+        .custom-select-option {
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            color: #444;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        .custom-select-option:hover {
+            background: #f1f5f9;
+            color: #1e2b4a;
+        }
+
+        .custom-select-option.selected {
+            background: #4170d8;
+            color: white;
+        }
+
+        @keyframes selectFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Checkbox Styling */
+        .custom-checkbox {
+            border-radius: 4px;
+            border-color: #cbd5e1;
+            color: #4170d8;
+        }
+
+        /* Card Shadow */
+        .card-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Input Icons */
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        /* Scrollbar for custom dropdown */
+        .custom-select-popup::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-select-popup::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-select-popup::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Full Screen Overrides for Superadmin */
+        #superadmin-login-view,
+        #superadmin-dashboard-view {
+            max-width: none !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Reduce top padding for main content */
+        .main-content {
+            padding-top: 15px !important;
+        }
+    </style>
+    <!-- Local Styles -->
+    <link rel="stylesheet" href="style.css?v=1">
+    <link rel="manifest" href="manifest.json">
+    <!-- Apple Mobile Web App Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UNIE Leads">
+    <link rel="icon" id="favicon"
+        href="https://media.licdn.com/dms/image/v2/C4E0BAQF4rsIi3Abx-g/company-logo_200_200/company-logo_200_200/0/1646132782177/unie_universidad_central_de_madrid_logo?e=2147483647&v=beta&t=TObjQ8YzZep1U8EzVMkbrRtjnzTiwte5Atj7Bku_fbU"
+        type="image/png">
+    <link rel="apple-touch-icon" id="apple-icon"
+        href="https://media.licdn.com/dms/image/v2/C4E0BAQF4rsIi3Abx-g/company-logo_200_200/company-logo_200_200/0/1646132782177/unie_universidad_central_de_madrid_logo?e=2147483647&v=beta&t=TObjQ8YzZep1U8EzVMkbrRtjnzTiwte5Atj7Bku_fbU">
+    <!-- Libraries -->
+    <script src="libs/dexie.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="libs/xlsx.full.min.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed', err));
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Notification Area -->
+        <div id="notification-area" class="notification-area"></div>
+
+        <!-- Connection Status -->
+        <div class="status-bar">
+            <span id="connection-status" class="status-pill offline">Offline</span>
+            <span id="leads-count" class="status-pill info" style="display: none;">0 Leads Guardados</span>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Form View (Premium Redesign) -->
+            <section id="form-view" class="view">
+                <!-- BEGIN: Admin Access -->
+                <div class="flex justify-end mb-2 px-4">
+                    <button id="admin-access-btn" class="text-gray-300 hover:text-gray-900 transition-colors text-xl"
+                        title="Acceso Admin">
+                        <i class="fa-solid fa-lock text-gray-400"></i>
+                    </button>
+                </div>
+
+                <!-- BEGIN: Header -->
+                <header class="w-full flex flex-col items-center mb-8">
+                    <!-- Logo Section -->
+                    <div class="mb-0">
+                        <img id="app-logo"
+                            src="https://www.universidadunie.com/sites/unie.es/themes/custom/unie_es/logo.webp"
+                            alt="UNIE Universidad Logo" class="h-28 object-contain">
+                    </div>
+                </header>
+
+                <form id="lead-form">
+                    <!-- BEGIN: Card 1 (Interests) -->
+                    <section class="bg-white rounded-[20px] card-shadow p-5 md:p-6 mb-4">
+                        <h2 class="text-lg font-bold mb-4 text-gray-900 uppercase text-xs tracking-widest">Paso 1: Tus
+                            intereses</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Área de Conocimiento -->
+                            <div class="relative w-full">
+                                <i class="fa-solid fa-book-open input-icon"></i>
+                                <select id="knowledge-area" name="knowledgeArea" required
+                                    class="custom-input uppercase tracking-wide cursor-pointer">
+                                    <option disabled selected value="">ÁREA DE CONOCIMIENTO</option>
+                                    <!-- Populated via JS -->
+                                </select>
+                            </div>
+                            <!-- Programa -->
+                            <div class="relative w-full">
+                                <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                <select id="program" name="program" required
+                                    class="custom-input uppercase tracking-wide cursor-pointer">
+                                    <option disabled selected value="">¿QUÉ PROGRAMA TE INTERESA?</option>
+                                    <!-- Populated via JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- BEGIN: Card 2 (Personal Details) -->
+                    <section class="bg-white rounded-[20px] card-shadow p-5 md:p-6">
+                        <h2 class="text-lg font-bold mb-4 text-gray-900 uppercase text-xs tracking-widest">Paso 2: Sobre
+                            ti</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+                            <!-- Nombre -->
+                            <div class="md:col-span-6 relative">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input id="firstName" name="firstName" required type="text"
+                                    class="custom-input placeholder-gray-600 uppercase tracking-wide"
+                                    placeholder="NOMBRE" />
+                            </div>
+                            <!-- Apellidos -->
+                            <div class="md:col-span-6 relative">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input id="lastName" name="lastName" required type="text"
+                                    class="custom-input placeholder-gray-600 uppercase tracking-wide"
+                                    placeholder="APELLIDOS" />
+                            </div>
+                            <!-- Correo Electrónico (Single Row Full Width) -->
+                            <div class="md:col-span-12 relative">
+                                <i class="fa-regular fa-envelope input-icon"></i>
+                                <input id="email" name="email" required type="email"
+                                    class="custom-input placeholder-gray-600 uppercase tracking-wide"
+                                    placeholder="CORREO ELECTRÓNICO" />
+                            </div>
+
+                            <!-- Integrated Row: Country, Province, Age -->
+                            <!-- País -->
+                            <div class="md:col-span-4 relative">
+                                <i class="fa-solid fa-globe input-icon"></i>
+                                <select id="country" name="country" required
+                                    class="custom-input uppercase tracking-wide cursor-pointer">
+                                    <option value="ES" data-prefix="+34" selected>España</option>
+                                    <option value="MX" data-prefix="+52">México</option>
+                                    <option value="CO" data-prefix="+57">Colombia</option>
+                                    <option value="EC" data-prefix="+593">Ecuador</option>
+                                    <option value="PE" data-prefix="+51">Perú</option>
+                                    <option value="Other" data-prefix="">Otro</option>
+                                </select>
+                            </div>
+
+                            <!-- Provincia -->
+                            <div class="md:col-span-5 relative" id="province-group">
+                                <i class="fa-solid fa-location-dot input-icon"></i>
+                                <!-- Select for Spain -->
+                                <select id="province" name="provinceSelect"
+                                    class="custom-input uppercase tracking-wide cursor-pointer">
+                                    <option value="" disabled selected>PROVINCIA</option>
+                                    <option value="Madrid">Madrid</option>
+                                    <option value="Barcelona">Barcelona</option>
+                                    <option value="Valencia">Valencia</option>
+                                    <option value="Sevilla">Sevilla</option>
+                                    <option value="Zaragoza">Zaragoza</option>
+                                    <option value="Málaga">Málaga</option>
+                                    <option value="Murcia">Murcia</option>
+                                    <option value="Palma">Palma</option>
+                                    <option value="Las Palmas">Las Palmas</option>
+                                    <option value="Bilbao">Bilbao</option>
+                                    <option value="Alicante">Alicante</option>
+                                    <option value="Córdoba">Córdoba</option>
+                                    <option value="Valladolid">Valladolid</option>
+                                    <option value="Vigo">Vigo</option>
+                                    <option value="Gijón">Gijón</option>
+                                    <option value="Hospitalet">Hospitalet</option>
+                                    <option value="Vitoria">Vitoria</option>
+                                    <option value="Coruña">A Coruña</option>
+                                    <option value="Granada">Granada</option>
+                                    <option value="Elche">Elche</option>
+                                    <option value="Other">Otra</option>
+                                </select>
+                                <!-- Free Text for International -->
+                                <input type="text" id="province-text" name="provinceText"
+                                    class="custom-input uppercase tracking-wide" placeholder="PROVINCIA"
+                                    style="display: none;">
+                            </div>
+
+                            <!-- Edad -->
+                            <div class="md:col-span-3 relative">
+                                <i class="fa-regular fa-calendar input-icon"></i>
+                                <input id="age" name="age" type="number" inputmode="numeric" pattern="[0-9]*" min="14"
+                                    max="90" class="custom-input placeholder-gray-600 uppercase tracking-wide"
+                                    placeholder="EDAD" />
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="md:col-span-6 flex gap-2">
+                                <input type="text" id="phone-prefix" name="phonePrefix" value="+34" readonly
+                                    class="custom-input !w-[90px] text-center !pl-0" />
+                                <div class="relative flex-1">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input id="phone" name="phone" required type="tel" inputmode="numeric"
+                                        pattern="[0-9]*" class="custom-input placeholder-gray-600"
+                                        placeholder="TELÉFONO" />
+                                </div>
+                            </div>
+
+                            <!-- Nivel de Estudios -->
+                            <div class="md:col-span-6 relative">
+                                <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                <select id="study-level" name="studyLevel" required
+                                    class="custom-input uppercase tracking-wide cursor-pointer">
+                                    <option value="" disabled selected>NIVEL DE ESTUDIOS</option>
+                                    <!-- Dynamic -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Legal Checkbox -->
+                        <div class="flex items-start gap-4 mt-6">
+                            <input type="checkbox" id="privacy" name="privacy" required
+                                class="custom-checkbox w-5 h-5 mt-1 focus:ring-[#4170d8] text-[#4170d8] border-gray-300 rounded" />
+                            <label for="privacy"
+                                class="text-[11px] leading-tight text-gray-600 text-justify overflow-y-auto max-h-[85px] pr-2 block">
+                                UNIE UNIVERSIDAD S.L, tratará sus datos personales para contactarle e informarle del
+                                programa seleccionado de cara a las dos próximas convocatorias del mismo. Sus datos se
+                                eliminarán una vez haya facilitado dicha información y/o transcurridas las citadas
+                                convocatorias.<br><br>
+                                Ud. podrá ejercer los derechos de acceso, supresión, rectificación, oposición,
+                                limitación y portabilidad, mediante carta a UNIE UNIVERSIDAD S.L - Apartado de Correos
+                                221 de Barcelona, o remitiendo un email a rgpd@universidadunie.com. Asimismo, cuando lo
+                                considere oportuno podrá presentar una reclamación ante la Agencia Española de
+                                protección de datos.<br><br>
+                                Podrá ponerse en contacto con nuestro Delegado de Protección de Datos mediante escrito
+                                dirigido a dpo@planeta.es o a Grupo Planeta, At.: Delegado de Protección de Datos, Avda.
+                                Diagonal 662-664, 08034 Barcelona.
+                            </label>
+                        </div>
+
+                        <!-- Honeypot (Antibots) -->
+                        <div style="opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1;">
+                            <label for="website_url">Website</label>
+                            <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off">
+                        </div>
+                    </section>
+
+                    <!-- Submit Button -->
+                    <div class="mt-6 flex justify-center">
+                        <button type="submit"
+                            class="bg-[#4170d8] hover:bg-[#345db5] text-white font-bold text-lg h-[55px] px-20 rounded-full shadow-lg transition-all duration-200 w-full md:w-auto md:min-w-[350px] flex items-center justify-center uppercase tracking-widest">
+                            ENVIAR DATOS
+                        </button>
+                    </div>
+                </form>
+
+                <!-- PFU Master Access Footer -->
+                <div class="mt-8 pt-8 border-t border-gray-100 text-center">
+                    <button onclick="window.location.href='/leads/'"
+                        class="text-gray-300 hover:text-blue-500 transition-colors text-[10px] font-bold tracking-widest uppercase">
+                        PFU Lead Capture Platform &copy; 2026
+                    </button>
+                </div>
+            </section>
+
+            <!-- Admin View (Tailwind Redesign) -->
+            <section id="admin-view" class="view">
+                <div class="max-w-7xl mx-auto">
+                    <!-- BEGIN: MainHeader -->
+                    <header class="mb-6" data-purpose="page-header">
+                        <div class="flex items-center gap-4 mb-3">
+                            <button id="exit-admin-btn"
+                                class="p-2 bg-slate-200 hover:bg-slate-300 rounded text-slate-700 transition-colors"
+                                title="Volver al Formulario">←</button>
+                            <h1 class="text-3xl font-bold text-slate-900">Panel de Administración</h1>
+                        </div>
+                        <!-- Status Badges Row -->
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <!-- Badge: Guardados -->
+                            <span id="admin-total-leads"
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-slate-300 text-slate-800">
+                                GUARDADOS: 0
+                            </span>
+                            <!-- Badge: Version -->
+                            <span
+                                class="version-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold text-white bg-slate-600">
+                                Version 1
+                            </span>
+                        </div>
+                    </header>
+                    <!-- END: MainHeader -->
+
+                    <!-- BEGIN: DataCard -->
+                    <section class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mb-6">
+                        <!-- Toolbar Section -->
+                        <div class="p-4 border-b border-slate-100 overflow-x-auto">
+                            <div class="flex gap-2 min-w-max">
+                                <button id="stand-config-btn"
+                                    class="px-4 py-2 border border-slate-300 rounded text-slate-700 font-medium hover:bg-slate-50 transition-colors text-sm whitespace-nowrap">
+                                    Configuración
+                                </button>
+                                <button id="export-atenea-btn"
+                                    class="px-4 py-2 border border-slate-300 rounded text-slate-700 font-medium hover:bg-slate-50 transition-colors text-sm whitespace-nowrap">
+                                    Exportar Excel Atenea
+                                </button>
+                                <button id="export-legal-btn"
+                                    class="px-4 py-2 border border-slate-300 rounded text-slate-700 font-medium hover:bg-slate-50 transition-colors text-sm whitespace-nowrap">
+                                    Exportar Excel Legal
+                                </button>
+                                <button id="delete-all-btn"
+                                    class="px-4 py-2 border border-red-300 rounded text-red-700 font-medium hover:bg-red-50 transition-colors text-sm whitespace-nowrap">
+                                    Borrar Todo
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Table Section -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm" id="leads-table">
+                                <thead
+                                    class="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 w-12" scope="col">ID</th>
+                                        <th class="px-4 py-3" scope="col">Nombre</th>
+                                        <th class="px-4 py-3" scope="col">Email</th>
+                                        <th class="px-4 py-3" scope="col">Programa</th>
+                                        <th class="px-4 py-3" scope="col">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <!-- END: DataCard -->
+
+
+                </div>
+            </section>
+
+            <!-- Stand Config View (Tailwind Premium Redesign) -->
+            <section id="stand-config-view" class="view">
+                <main class="bg-white rounded-lg shadow-lg w-full max-w-7xl mx-auto p-8 md:p-10 relative mt-10">
+                    <!-- BEGIN: Back Link -->
+                    <div class="mb-6">
+                        <button
+                            class="back-admin-btn inline-flex items-center text-custom-blue hover:opacity-80 transition-opacity font-medium text-sm no-underline">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Volver
+                        </button>
+                    </div>
+                    <!-- END: Back Link -->
+
+                    <!-- BEGIN: Header Section -->
+                    <header class="mb-8">
+                        <h1 class="text-2xl md:text-3xl font-bold text-custom-blue mb-4">
+                            Ajustes del Formulario
+                        </h1>
+                        <hr class="border-t border-gray-200" />
+                    </header>
+                    <!-- END: Header Section -->
+
+                    <!-- BEGIN: Section 1 - Logo, Campaign & Privacy Link -->
+                    <section class="mb-10">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <!-- Logo Personalizado -->
+                            <div>
+                                <h2 class="text-sm font-bold text-gray-800 mb-3">Logo de Cabecera</h2>
+                                <div
+                                    class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[160px] justify-center text-center">
+                                    <img id="config-logo-preview"
+                                        src="https://www.universidadunie.com/sites/unie.es/themes/custom/unie_es/logo.webp"
+                                        alt="Current Logo" class="h-16 object-contain mb-4">
+                                    <label
+                                        class="cursor-pointer bg-white border border-gray-300 px-3 py-1.5 rounded text-xs font-medium hover:bg-gray-50 transition-colors">
+                                        Cambiar Logo
+                                        <input type="file" id="config-logo-input" accept="image/*" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- Isotipo / App Icon -->
+                            <div>
+                                <h2 class="text-sm font-bold text-gray-800 mb-3">Isotipo (PWA / iPad Icon)</h2>
+                                <div
+                                    class="flex flex-col items-center p-4 border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/30 min-h-[160px] justify-center text-center">
+                                    <div class="relative mb-4">
+                                        <img id="config-pwa-preview"
+                                            src="https://media.licdn.com/dms/image/v2/C4E0BAQF4rsIi3Abx-g/company-logo_200_200/company-logo_200_200/0/1646132782177/unie_universidad_central_de_madrid_logo?e=2147483647&v=beta&t=TObjQ8YzZep1U8EzVMkbrRtjnzTiwte5Atj7Bku_fbU"
+                                            alt="PWA Icon" class="w-16 h-16 rounded-2xl object-cover shadow-md">
+                                        <div
+                                            class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                                            iOS</div>
+                                    </div>
+                                    <label
+                                        class="cursor-pointer bg-white border border-blue-200 px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-50 transition-colors text-blue-600">
+                                        Subir Isotipo
+                                        <input type="file" id="config-pwa-input" accept="image/*" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- Campaign Code -->
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-800 mb-4">Campaña Activa</h2>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1"
+                                            for="config-stand-campaign">
+                                            CÓDIGO DE CAMPAÑA
+                                        </label>
+                                        <input
+                                            class="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none transition-colors h-10"
+                                            id="config-stand-campaign" type="text" value="I10002S0003" />
+                                    </div>
+                                    <button id="save-stand-campaign-btn"
+                                        class="w-full bg-custom-blue text-white font-medium px-4 py-2 rounded shadow-sm hover:bg-opacity-90 transition-colors h-10 flex items-center justify-center uppercase text-sm tracking-wide">
+                                        Guardar Campaña
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Privacy URL -->
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-800 mb-4">Link Privacidad</h2>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1"
+                                            for="config-privacy-link">
+                                            URL POLÍTICA PRIVACIDAD
+                                        </label>
+                                        <input
+                                            class="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none transition-colors h-10"
+                                            id="config-privacy-link" type="url" placeholder="https://..." />
+                                    </div>
+                                    <button id="save-privacy-link-btn"
+                                        class="w-full bg-slate-600 text-white font-medium px-4 py-2 rounded shadow-sm hover:bg-opacity-90 transition-colors h-10 flex items-center justify-center uppercase text-sm tracking-wide">
+                                        Guardar Link
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- BEGIN: Technical Configuration (Dynamics) -->
+                    <section class="mb-10 bg-blue-50/30 p-8 rounded-3xl border border-blue-100">
+                        <div class="flex items-center gap-3 mb-6">
+                            <i class="fa-solid fa-gears text-blue-600 text-xl"></i>
+                            <h2 class="text-xl font-bold text-slate-800">Parámetros Técnicos (Atenea / Dynamics)</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <!-- Brand ID -->
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">ID
+                                    de Marca (Brand)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="config-brand-id"
+                                        class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 ring-blue-500 outline-none">
+                                    <button id="save-brand-id-btn"
+                                        class="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 transition-colors">
+                                        <i class="fa-solid fa-save"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Campus ID -->
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">ID
+                                    Campus</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="config-campus-id"
+                                        class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 ring-blue-500 outline-none">
+                                    <button id="save-campus-id-btn"
+                                        class="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 transition-colors">
+                                        <i class="fa-solid fa-save"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- RGPD ID -->
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">ID
+                                    RGPD (Dynamics)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="config-rgpd-id"
+                                        class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 ring-blue-500 outline-none">
+                                    <button id="save-rgpd-id-btn"
+                                        class="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 transition-colors">
+                                        <i class="fa-solid fa-save"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Institution Code (Read Only from Path) -->
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Código
+                                    Institución</label>
+                                <input type="text" id="config-inst-code" readonly
+                                    class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-500 cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <!-- CLOUD SYNC SETTINGS -->
+                        <div class="mt-8 pt-8 border-t border-blue-100">
+                            <div class="flex items-center gap-3 mb-6">
+                                <i class="fa-solid fa-cloud-arrow-up text-blue-600 text-xl"></i>
+                                <h2 class="text-xl font-bold text-slate-800">Copia de Seguridad Cloud (Docker/CouchDB)
+                                </h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">URL
+                                        del Servidor Central (CouchDB)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="config-sync-url"
+                                            class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 ring-blue-500 outline-none"
+                                            placeholder="http://tu-servidor:5984">
+                                        <button id="save-sync-url-btn"
+                                            class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors">VINCULAR</button>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 mt-2 font-medium italic">Ejemplo:
+                                        http://192.168.1.50:5984 (Asegúrate de incluir el puerto 5984)</p>
+                                </div>
+                                <div id="sync-status-container"
+                                    class="bg-white rounded-2xl p-4 border border-slate-100 flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Estado del Backup
+                                        </p>
+                                        <span id="sync-status-badge" class="status-pill offline text-[11px]">No
+                                            Sincronizado</span>
+                                    </div>
+                                    <button id="force-sync-btn"
+                                        class="bg-slate-100 text-slate-400 p-3 rounded-xl cursor-not-allowed" disabled>
+                                        <i class="fa-solid fa-rotate"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- END: Section 1 - Logo, Campaign & Privacy Link -->
+
+
+
+                    <!-- BEGIN: SECTION 3 - Knowledge Areas, Study Levels & Legal Text -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+                        <!-- Knowledge Areas -->
+                        <section>
+                            <h2 class="text-lg font-bold text-gray-800 mb-4">Áreas de Conocimiento</h2>
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                <form id="config-knowledge-areas-form" class="flex gap-2 mb-4">
+                                    <input type="text" id="config-knowledge-area-input" required
+                                        class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none"
+                                        placeholder="Ej. Salud" />
+                                    <button type="submit"
+                                        class="bg-custom-blue text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider">
+                                        Añadir
+                                    </button>
+                                </form>
+                                <div id="knowledge-areas-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                                    <!-- JS will inject items here -->
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Study Levels -->
+                        <section>
+                            <h2 class="text-lg font-bold text-gray-800 mb-4">Niveles de Estudio</h2>
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                <form id="config-study-levels-form" class="flex gap-2 mb-4">
+                                    <input type="text" id="config-study-level-input" required
+                                        class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none"
+                                        placeholder="Ej. Doctorado" />
+                                    <button type="submit"
+                                        class="bg-custom-blue text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider">
+                                        Añadir
+                                    </button>
+                                </form>
+                                <div id="study-levels-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                                    <!-- JS will inject items here -->
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Legal Text -->
+                        <section>
+                            <h2 class="text-lg font-bold text-gray-800 mb-4">Texto Legal (RGPD)</h2>
+                            <div class="space-y-4 font-sans">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1"
+                                        for="config-legal-text">
+                                        CONTENIDO DE LA CLÁUSULA
+                                    </label>
+                                    <textarea id="config-legal-text" rows="8"
+                                        class="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none transition-colors text-[13px] text-justify leading-relaxed"></textarea>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button id="save-legal-text-btn"
+                                        class="bg-custom-blue text-white font-medium px-8 py-2 rounded shadow-sm hover:bg-opacity-90 transition-colors h-10 flex items-center justify-center uppercase text-sm tracking-wide">
+                                        Guardar Texto Legal
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- END: SECTION 3 - Study Levels & Legal Text -->
+
+                    <hr class="border-t border-gray-200 my-10" />
+
+                    <!-- BEGIN: Section 2 - Add/Edit Program -->
+                    <section class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-gray-800">
+                                Añadir / Editar Programa
+                            </h2>
+                            <div class="flex gap-2">
+                                <button onclick="downloadProgramTemplate()"
+                                    class="bg-white border border-slate-300 text-slate-600 px-3 py-2 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors">
+                                    <i class="fa-solid fa-download mr-1"></i> Plantilla
+                                </button>
+                                <label
+                                    class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded text-xs font-bold uppercase tracking-wider transition-colors border border-slate-200">
+                                    <i class="fa-solid fa-file-import mr-2"></i> Importar Excel
+                                    <input type="file" id="import-programs-excel" accept=".xlsx, .xls" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Form Grid -->
+                        <form id="config-form">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+                                <!-- Program Name Input -->
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1"
+                                        for="config-name">
+                                        NOMBRE DEL PROGRAMA
+                                    </label>
+                                    <input
+                                        class="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 placeholder-gray-400 h-10"
+                                        name="name" id="config-name" placeholder="Ej. Grado en ADE" type="text" />
+                                </div>
+                                <!-- Product ID Input -->
+                                <div class="sm:col-span-1">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1"
+                                        for="config-id">
+                                        ID PRODUCTO
+                                    </label>
+                                    <input
+                                        class="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 placeholder-gray-400 h-10"
+                                        name="id" id="config-id" placeholder="Ej. 9017" type="text" />
+                                </div>
+                                <!-- Dedication ID Input -->
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1"
+                                        for="config-dedication">
+                                        ID DEDICACIÓN
+                                    </label>
+                                    <input
+                                        class="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 placeholder-gray-400 h-10"
+                                        name="dedication" id="config-dedication" placeholder="Ej. 1" type="text" />
+                                </div>
+                                <!-- Save Button for Program -->
+                                <div class="sm:col-span-1 flex items-end">
+                                    <button type="submit"
+                                        class="w-full bg-custom-blue text-white font-medium px-4 py-2 rounded shadow-sm hover:bg-opacity-90 transition-colors h-10 flex items-center justify-center uppercase text-sm tracking-wide">
+                                        Añadir
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                    <!-- END: Section 2 - Add/Edit Program -->
+
+                    <!-- BEGIN: Table Section -->
+                    <section aria-label="Program List Table">
+                        <div class="border border-gray-200 rounded-md overflow-hidden">
+                            <!-- Table Header -->
+                            <div class="bg-custom-bg grid grid-cols-12 gap-2 px-4 py-3 border-b border-gray-200 italic">
+                                <div class="col-span-6 sm:col-span-5 text-xs font-bold text-gray-600 uppercase">Nombre
+                                </div>
+                                <div
+                                    class="col-span-3 sm:col-span-3 text-xs font-bold text-gray-600 uppercase text-center">
+                                    ID Producto</div>
+                                <div
+                                    class="col-span-2 sm:col-span-3 text-xs font-bold text-gray-600 uppercase text-center">
+                                    ID Dedicación</div>
+                                <div
+                                    class="col-span-1 sm:col-span-1 text-xs font-bold text-gray-600 uppercase text-center">
+                                    Acciones</div>
+                            </div>
+                            <!-- Table Rows -->
+                            <div id="programs-table-body" class="divide-y divide-gray-100 italic">
+                                <!-- JS will inject rows here -->
+                            </div>
+                        </div>
+                    </section>
+                    <!-- END: Table Section -->
+                </main>
+            </section>
+        </main>
+    </div>
+
+    <!-- Superadmin Login View -->
+    <section id="superadmin-login-view" class="view flex-view fixed inset-0 z-[10000] items-center justify-center p-4"
+        style="background: linear-gradient(rgba(30, 43, 74, 0.4), rgba(30, 43, 74, 0.4)), url('assets/login-bg.webp'); background-size: cover; background-position: center;">
+        <div
+            class="bg-white/95 backdrop-blur-sm rounded-3xl p-10 w-full max-w-md shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20">
+            <div class="text-center mb-8">
+                <img src="assets/pfu-logo-endoso.png" alt="Institutional Logo" class="h-16 mx-auto mb-4 object-contain">
+                <p class="text-gray-400 text-[10px] font-bold uppercase tracking-[0.3em]">Offline Lead System</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="superadmin-user" placeholder="Usuario"
+                    class="w-full border-2 border-gray-100 rounded-2xl px-6 py-4 text-center text-lg focus:border-blue-500 outline-none transition-all">
+                <input type="password" id="superadmin-pass" placeholder="Contraseña"
+                    class="w-full border-2 border-gray-100 rounded-2xl px-6 py-4 text-center text-xl focus:border-blue-500 outline-none transition-all">
+                <button id="superadmin-login-btn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200">
+                    ACCEDER AL PANEL
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Superadmin Dashboard View -->
+    <section id="superadmin-dashboard-view" class="view fixed inset-0 bg-gray-50 z-[10000] overflow-y-auto">
+        <div class="max-w-4xl mx-auto py-12 px-4">
+            <header class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Panel Maestro PFU</h1>
+                    <p class="text-gray-500">Control de subdominios y clientes</p>
+                </div>
+                <button onclick="logoutSuperadmin()"
+                    class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-bold transition-colors">Cerrar
+                    Sesión</button>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Clientes</h3>
+                    <p id="super-inst-count" class="text-4xl font-black text-blue-600">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Leads</h3>
+                    <p id="super-leads-total" class="text-4xl font-black text-emerald-600">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 md:col-span-2">
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Nueva Institución</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="new-inst-id" placeholder="ID (ej: unie, itp, uax)"
+                            class="flex-1 bg-gray-50 border-none rounded-xl px-4 py-2 outline-none focus:ring-2 ring-blue-500">
+                        <button id="create-inst-btn"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors">CREAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase">Institución</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-gray-400 uppercase">Leads</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase">Ruta de Acceso
+                            </th>
+                            <th class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="super-inst-list" class="divide-y divide-gray-50">
+                        <!-- Clientes dinámicos -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Global Security Configuration -->
+            <div class="mt-10 bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-10">
+                <div class="flex items-center gap-3 mb-8">
+                    <i class="fa-solid fa-shield-halved text-blue-600 text-xl"></i>
+                    <h2 class="text-xl font-bold text-gray-900 border-b pb-2 flex-1">Seguridad y Accesos Globales</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <!-- Master Login Access -->
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Acceso Panel
+                            Maestro</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1 ml-1">Usuario
+                                    Maestro</label>
+                                <input type="text" id="config-master-user" placeholder="pfusuper"
+                                    class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 ring-blue-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1 ml-1">Contraseña
+                                    Maestra</label>
+                                <input type="password" id="config-master-pass" placeholder="pfusuper321"
+                                    class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 ring-blue-500 text-sm">
+                            </div>
+                        </div>
+                        <button id="save-master-auth-btn"
+                            class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-all shadow-md mt-4 uppercase text-xs tracking-widest">
+                            Actualizar Acceso Maestro
+                        </button>
+                    </div>
+
+                    <!-- Institutional Operations Keys -->
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Claves
+                            Operativas (Instituciones)</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1 ml-1">Acceso
+                                    Admin Estándar</label>
+                                <input type="text" id="config-inst-pass" placeholder="pfu321"
+                                    class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 ring-blue-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1 ml-1">Operativa
+                                    Maestra (Borrado)</label>
+                                <input type="text" id="config-god-pass" placeholder="godmode"
+                                    class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 ring-blue-500 text-sm">
+                            </div>
+                        </div>
+                        <button id="save-inst-keys-btn"
+                            class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-black transition-all shadow-md mt-4 uppercase text-xs tracking-widest">
+                            Actualizar Claves Operativas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="password-modal"
+        class="modal-overlay hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 px-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
+            <!-- Header -->
+            <header class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 id="password-modal-title" class="text-xl font-bold text-custom-blue">Acceso Administrador</h3>
+                <button id="close-password-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </header>
+            <!-- Body -->
+            <div class="p-6">
+                <div class="flex items-center justify-center gap-2 mb-6">
+                    <i class="fa-solid fa-lock text-gray-500"></i>
+                    <p id="password-modal-message" class="text-sm font-medium text-gray-600">Introduce la clave de
+                        acceso al panel:</p>
+                </div>
+
+                <div class="mb-6">
+                    <label for="password-input"
+                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Contraseña</label>
+                    <input type="password" id="password-input" placeholder="••••••••"
+                        class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] focus:border-custom-blue focus:ring-0 transition-all outline-none" />
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="password-cancel-btn"
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-full transition-colors text-sm uppercase tracking-wide">
+                        Cancelar
+                    </button>
+                    <button id="password-submit-btn"
+                        class="flex-1 bg-custom-blue hover:bg-opacity-90 text-white font-bold py-3 px-4 rounded-full transition-colors text-sm uppercase tracking-wide">
+                        Entrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Legal Consent Modal (Post-submission) -->
+    <div id="legal-modal"
+        class="modal-overlay hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60 px-4">
+        <div
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
+            <!-- Header -->
+            <header class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-custom-bg">
+                <h3 class="text-xl font-bold text-custom-blue">Requerimientos Legales</h3>
+                <button id="close-legal-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </header>
+            <!-- Body -->
+            <div class="p-6">
+                <p class="text-sm text-gray-500 mb-6 font-medium">Por favor, revisa y marca las siguientes casillas para
+                    finalizar tu solicitud:</p>
+
+                <div class="space-y-6">
+                    <!-- Check 1 -->
+                    <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                        <input type="checkbox" id="legal-check-1"
+                            class="custom-checkbox w-5 h-5 mt-0.5 text-[#4170d8] rounded" />
+                        <label for="legal-check-1" class="text-[12px] leading-snug text-gray-700 text-justify">
+                            Remitirle comunicaciones comerciales personalizadas sobre nuestros productos y/o servicios o
+                            los de terceras empresas, elaborando para ello un perfil comercial.
+                        </label>
+                    </div>
+
+                    <!-- Check 2 -->
+                    <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                        <input type="checkbox" id="legal-check-2"
+                            class="custom-checkbox w-5 h-5 mt-0.5 text-[#4170d8] rounded" />
+                        <label for="legal-check-2" class="text-[12px] leading-snug text-gray-700 text-justify">
+                            Comunicar a las empresas del Grupo Planeta sus datos personales y, en su caso, su perfil
+                            comercial, para que éstas puedan realizar, a su vez, un nuevo perfil comercial y remitirle
+                            comunicaciones comerciales personalizadas sobre productos y/o servicios propios y de
+                            terceras empresas.
+                        </label>
+                    </div>
+
+                    <!-- Check 3 -->
+                    <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                        <input type="checkbox" id="legal-check-3" required
+                            class="custom-checkbox w-5 h-5 mt-0.5 text-[#4170d8] rounded" />
+                        <label for="legal-check-3"
+                            class="text-[12px] leading-snug text-gray-700 text-justify font-bold">
+                            He leído y acepto la <a
+                                href="https://www.universidadunie.com/gracias?form=multiprogram_information_request&type=SI&nid=191"
+                                target="_blank" class="text-blue-600 underline">política de privacidad</a>.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex gap-3">
+                    <button id="legal-cancel-btn"
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-full transition-colors text-sm uppercase tracking-wide">
+                        Cancelar
+                    </button>
+                    <button id="legal-submit-btn"
+                        class="flex-1 bg-custom-blue hover:bg-opacity-90 text-white font-bold py-4 rounded-full transition-colors text-sm uppercase tracking-wide shadow-lg">
+                        Finalizar Registro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js?v=99.0"></script>
+</body>
+
+</html>
