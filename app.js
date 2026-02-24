@@ -329,7 +329,7 @@ async function init() {
         document.getElementById('config-brand-id').value = storage.get('config_brand_id') || instID.toUpperCase();
         document.getElementById('config-campus-id').value = storage.get('config_campus') || '1';
         document.getElementById('config-rgpd-id').value = storage.get('config_rgpd') || '1';
-        document.getElementById('config-inst-code').value = instID.toUpperCase();
+        document.getElementById('config-inst-code').value = storage.get('config_institution') || instID.toUpperCase();
 
         // Sync Params
         const syncUrl = storage.get('config_sync_url') || '';
@@ -407,6 +407,12 @@ async function init() {
         const val = document.getElementById('config-campus-id').value.trim();
         storage.set('config_campus', val);
         showToast('ID de Campus actualizado', 'success');
+    });
+
+    document.getElementById('save-inst-code-btn')?.addEventListener('click', () => {
+        const val = document.getElementById('config-inst-code').value.trim();
+        storage.set('config_institution', val);
+        showToast('Código de Institución actualizado', 'success');
     });
 
     document.getElementById('save-rgpd-id-btn')?.addEventListener('click', () => {
@@ -928,7 +934,7 @@ async function exportToExcelAtenea() {
         }
 
         const data = leads.map(l => ({
-            "Institution": storage.get('config_brand_id') || instID.toUpperCase(),
+            "Institution": storage.get('config_brand_id') || storage.get('config_institution') || instID.toUpperCase(),
             "First Name": l.firstName,
             "First Last Name": l.lastName,
             "Telephone Number": l.phone,
@@ -970,7 +976,7 @@ async function exportToExcelLegal() {
         }
 
         const data = leads.map(l => ({
-            "Institution": storage.get('config_brand_id') || instID.toUpperCase(),
+            "Institution": storage.get('config_brand_id') || storage.get('config_institution') || instID.toUpperCase(),
             "First Name": l.firstName,
             "First Last Name": l.lastName,
             "Telephone Number": l.phone,
