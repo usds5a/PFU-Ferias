@@ -651,15 +651,43 @@ async function updateLeadsCount() {
         const info = await localDB.info();
         const total = info.doc_count;
 
-        const badge = document.getElementById('leads-count');
-        if (badge) {
-            badge.textContent = `${total} Leads Guardados`;
-            badge.style.display = total > 0 ? 'inline-flex' : 'none';
-        }
-
         // Update Admin Stats
         const totalBadge = document.getElementById('admin-total-leads');
-        if (totalBadge) totalBadge.textContent = `Guardados: ${total}`;
+        if (totalBadge) totalBadge.textContent = `Locales: ${total}`;
+
+        // Fetch Remote Count if Sync is configured
+        const remoteUrl = storage.get('config_sync_url');
+        const syncBadge = document.getElementById('admin-synced-leads');
+        if (remoteUrl && syncBadge) {
+            try {
+                const dbName = `pfu_leads_v2_${instID}`;
+                const fullRemoteUrl = `${remoteUrl.replace(/\/$/, '')}/${dbName}`;
+                // Use a basic fetch to get DB info from CouchDB
+                const response = await fetch(fullRemoteUrl, {
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('admin:password')
+                    }
+                });
+                if (response.ok) {
+                    const remoteData = await response.json();
+                    const remoteCount = remoteData.doc_count || 0;
+                    syncBadge.textContent = `Sincronizados: ${remoteCount}`;
+                    syncBadge.style.display = 'inline-flex';
+
+                    // Style accordingly
+                    if (remoteCount >= total && total > 0) {
+                        syncBadge.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800';
+                    } else {
+                        syncBadge.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800';
+                    }
+                }
+            } catch (err) {
+                console.warn("Remote count fetch failed", err);
+                syncBadge.style.display = 'none';
+            }
+        } else if (syncBadge) {
+            syncBadge.style.display = 'none';
+        }
     } catch (e) {
         console.error("Error counting leads:", e);
     }
