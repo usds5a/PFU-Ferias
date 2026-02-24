@@ -130,7 +130,7 @@ async function init() {
     updateLeadsCount();
 
     // --- RESET DB IF VERSION CHANGES ---
-    const currentAppVersion = 'Version 1';
+    const currentAppVersion = 'Version 2';
     const lastResetVersion = storage.get('last_reset_version');
     if (lastResetVersion !== currentAppVersion) {
         if (db) await db.leads.clear();

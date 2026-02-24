@@ -1,4 +1,4 @@
-const CACHE_NAME = 'unie-leads-v1';
+const CACHE_NAME = 'unie-leads-v2';
 const ASSETS = [
     './',
     './index.html',

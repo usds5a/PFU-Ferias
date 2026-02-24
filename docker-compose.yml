@@ -6,6 +6,8 @@ services:
     build: .
     ports:
       - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html
     restart: always
 
   # Base de Datos Centralizada con Sincronización
